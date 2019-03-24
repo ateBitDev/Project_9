@@ -2,42 +2,47 @@
 
 // load modules
 const express = require('express');
-const morgan = require('morgan');
+const mongoose = require('mongoose');
+const routes = require("./routes");
 
-// variable to enable global error logging
-const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
+const morgan = require('morgan');
+const jsonParser = require("body-parser");
+
+mongoose.connect("mongodb://localhost:27017/fsjstd-restapi");
+
+const db = mongoose.connection;
+
+db.on("error",function(err){
+  console.log("Connection error: ", err);
+});
+
+db.once("open",function(){
+  console.log("Connection Successful");
+});
 
 // create the Express app
 const app = express();
 
-// setup morgan which gives us http request logging
+app.use(jsonParser());
 app.use(morgan('dev'));
 
 // TODO setup your api routes here
 
-// setup a friendly greeting for the root route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to the REST API project!',
-  });
-});
+// uses routes to handle everything other than errors
+app.use('/api', routes);
 
-// send 404 if no other route matched
-app.use((req, res) => {
-  res.status(404).json({
-    message: 'Route Not Found',
-  });
+app.use((req,res,next)=>{
+  const err = new Error("Not Found");
+  err.status = 404;
+  next(err);
 });
 
 // setup a global error handler
 app.use((err, req, res, next) => {
-  if (enableGlobalErrorLogging) {
-    console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
-  }
-
   res.status(err.status || 500).json({
-    message: err.message,
-    error: {},
+    error: {
+      message: err.message,
+    }
   });
 });
 
