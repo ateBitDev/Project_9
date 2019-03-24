@@ -5,11 +5,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const CourseSchema = new Schema({
-    user: [],
     title: String,
     description: String,
     estimatedTime: String,
-    materialsNeeded: String
+    materialsNeeded: String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+     }
 });
 
 const Course = mongoose.model("Course",CourseSchema);

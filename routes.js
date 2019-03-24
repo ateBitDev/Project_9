@@ -47,7 +47,7 @@ console.log(user)
 
 res.json({
     Username: user.emailAddress
-    
+
     
     });
 });
@@ -102,7 +102,28 @@ router.get("/courses/:id",(req,res,next)=>{
     });
 });
 
-router.post("/courses",(req,res,next)=>{
+router.post("/courses",[
+    check('title')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage('Please enter a title'),
+    check('description')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage('Please enter a description'),
+    check('estimatedTime')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage('please enter an estimatedTime'),
+    check('materialsNeeded')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage("please enter the materialsNeeded"),
+],(req,res,next)=>{
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        const errorMessages = errors.array().map(error => error.msg);
+
+       return res.status(400).json({errors:errorMessages})
+    }
+
     let course = new Course(req.body);
     course.save(function(err,course){
         if(err) next(err);
@@ -111,7 +132,28 @@ router.post("/courses",(req,res,next)=>{
     });
 });
 
-router.put("/courses/:id",(req,res,next)=>{
+router.put("/courses/:id",[
+    check('title')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage('Please enter a title'),
+    check('description')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage('Please enter a description'),
+    check('estimatedTime')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage('please enter an estimatedTime'),
+    check('materialsNeeded')
+    .exists({checkNull:true,checkFalsy:true})
+    .withMessage("please enter the materialsNeeded"),
+],(req,res,next)=>{
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        const errorMessages = errors.array().map(error => error.msg);
+
+       return res.status(400).json({errors:errorMessages})
+    }
+
     Course.findById(req.params.id)
     .exec(function(err,course){
         if(err) next(err); 
