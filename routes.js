@@ -39,6 +39,9 @@ const authenticateUser = async (req,res,next) => {
     }
 }
 
+router.get("/",(req,res,next)=>{
+    res.json({message: "welome to the home screen"});
+});
 
 router.get("/users", authenticateUser ,(req,res,next)=>{
 
@@ -79,9 +82,10 @@ router.post("/users",[
     user.password = bcrypt.hashSync(user.password);
     user.save(function(err, user){
         if(err) next(err);
-        res.status(201)
-        res.json(user);
+        res.location("/")
+        res.sendStatus(201)
     });
+   
 });
 
 router.get("/courses",(req,res,next)=>{
@@ -127,8 +131,8 @@ router.post("/courses",[
     let course = new Course(req.body);
     course.save(function(err,course){
         if(err) next(err);
-        res.status(201);
-        res.json(course);
+        res.location("/")
+        res.sendStatus(201)
     });
 });
 
@@ -159,8 +163,8 @@ router.put("/courses/:id",[
         if(err) next(err); 
         course.update(req.body, function(err,course){
             if(err) next(err); 
-            res.status(204)
-            res.json(course);
+            res.location("/")
+            res.sendStatus(204)
         })
     })
 });
@@ -171,8 +175,8 @@ router.delete("/courses/:id",(req,res,next)=>{
         if(err) next(err);
         course.remove(function(err, course){
             if(err) next(err);
-            res.status(204)
-            res.json(course)
+            res.location("/")
+            res.sendStatus(204)
         });
         
     });
